@@ -32,7 +32,7 @@ setTimeout(() => console.log("C"), 0);
 
 async function work() {
   console.log("D");
-  await sleep(30);
+  await sleep(30); //30ms 지연 발생
   console.log("E");
 }
 work();
@@ -41,7 +41,10 @@ sleep(10).then(() => console.log("F"));
 
 console.log("G");
 
-// prediction:
-// actual:
+// prediction: A D E G F B C
+// actual: A D G C F E B
 // why I was wrong (one line per miss):
-//
+// G: await는 호출한 외부 코드 (G)를 막지 않으므로, 메인 스레드의 동기 코드인 G가 먼저 출력
+// C: 지연시간이 0ms이므로 비동기 작업 중 가장 먼저 실행
+// F: 지연시간이 10ms이므로 다음에 실행
+// E: work() 내부의 await sleep(30) 때문에 지연이 발생해 C, F 보다 나중에 찍힘
